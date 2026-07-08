@@ -415,6 +415,113 @@ section.tight { padding: var(--space-5) 0; }
   opacity: 0.75;
 }
 
+/* ---------------------------------------------------------
+   Capabilities — radial toolkit visual
+--------------------------------------------------------- */
+.cap-visual {
+  position: relative;
+  max-width: 880px;
+  height: 660px;
+  margin: var(--space-4) auto 0;
+}
+
+.cap-rings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 420px;
+  height: 420px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  pointer-events: none;
+}
+
+.cap-rings::before,
+.cap-rings::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+}
+
+.cap-rings::before {
+  inset: -80px;
+}
+
+.cap-rings::after {
+  inset: 130px;
+  border-style: dashed;
+}
+
+.cap-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-bg);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-card-hover);
+  z-index: 2;
+}
+
+.cap-pill {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  color: #fff;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition), box-shadow var(--transition);
+  z-index: 1;
+}
+
+.cap-pill:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.cap-pill svg { flex-shrink: 0; }
+
+.cap-c1 { background: #B15E30; }
+.cap-c2 { background: #6B5B95; }
+.cap-c3 { background: #3F6C8A; }
+.cap-c4 { background: #5F7A5B; }
+.cap-c5 { background: #A16207; }
+.cap-c6 { background: #A44B5C; }
+.cap-c7 { background: #55606B; }
+.cap-c8 { background: #3F7A6B; }
+
+@media (max-width: 860px) {
+  .cap-visual {
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: var(--space-2) 0;
+  }
+  .cap-rings, .cap-center { display: none; }
+  .cap-pill { position: static; }
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
