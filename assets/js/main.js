@@ -1,27 +1,6 @@
 (function () {
   'use strict';
 
-  var root = document.documentElement;
-  var STORAGE_KEY = 'vo-theme';
-
-  function applyTheme(theme) {
-    root.setAttribute('data-theme', theme);
-    var toggle = document.querySelector('[data-theme-toggle]');
-    if (toggle) toggle.setAttribute('aria-pressed', theme === 'dark');
-  }
-
-  function initTheme() {
-    var saved = localStorage.getItem(STORAGE_KEY);
-    applyTheme(saved === 'dark' ? 'dark' : 'light');
-  }
-
-  function toggleTheme() {
-    var current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-    var next = current === 'dark' ? 'light' : 'dark';
-    applyTheme(next);
-    localStorage.setItem(STORAGE_KEY, next);
-  }
-
   function initNav() {
     var toggle = document.querySelector('[data-nav-toggle]');
     var links = document.querySelector('[data-nav-links]');
@@ -65,13 +44,9 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    initTheme();
     initNav();
     initAccordion();
     initEmailReveal();
-
-    var themeToggle = document.querySelector('[data-theme-toggle]');
-    if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
 
     var current = document.body.getAttribute('data-page');
     if (current) {
