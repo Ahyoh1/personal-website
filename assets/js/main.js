@@ -49,47 +49,133 @@
 
   function initCapabilities() {
     var pills = document.querySelectorAll('.cap-pill');
-    var panel = document.getElementById('capDetail');
-    if (!pills.length || !panel) return;
-    var titleEl = document.getElementById('capDetailTitle');
-    var tagsEl = document.getElementById('capDetailTags');
-    var noteEl = document.getElementById('capDetailNote');
-    var closeBtn = document.getElementById('capDetailClose');
+    var visual = document.querySelector('.cap-visual');
+    if (!pills.length || !visual) return;
     var activePill = null;
 
-    function closePanel() {
-      panel.hidden = true;
+    function isMobile() {
+      return window.matchMedia('(max-width: 860px)').matches;
+    }
+
+    function itemsFor(data) {
+      var isNote = !(data.tools && data.tools.length);
+      return { items: isNote ? (data.note ? [data.note] : []) : data.tools, isNote: isNote };
+    }
+
+    function clearCluster() {
+      visual.querySelectorAll('.cap-chip, .cap-chip-row, .cap-chip-line').forEach(function (el) {
+        el.remove();
+      });
       if (activePill) activePill.classList.remove('is-active');
       activePill = null;
     }
 
+    function makeChip(text, isNote) {
+      var chip = document.createElement('span');
+      chip.className = 'cap-chip' + (isNote ? ' cap-chip-note' : '');
+      chip.textContent = text;
+      return chip;
+    }
+
+    function renderMobile(pill, data) {
+      var parsed = itemsFor(data);
+      if (!parsed.items.length) return;
+      var row = document.createElement('div');
+      row.className = 'cap-chip-row';
+      parsed.items.forEach(function (text) {
+        row.appendChild(makeChip(text, parsed.isNote));
+      });
+      pill.insertAdjacentElement('afterend', row);
+    }
+
+    function renderDesktop(pill, data) {
+      var parsed = itemsFor(data);
+      var n = parsed.items.length;
+      if (!n) return;
+
+      var visualRect = visual.getBoundingClientRect();
+      var pillRect = pill.getBoundingClientRect();
+      var cx = visualRect.width / 2;
+      var cy = visualRect.height / 2;
+      var px = pillRect.left - visualRect.left + pillRect.width / 2;
+      var py = pillRect.top - visualRect.top + pillRect.height / 2;
+
+      var dx = px - cx;
+      var dy = py - cy;
+      var len = Math.sqrt(dx * dx + dy * dy) || 1;
+      if (len < 30) { dx = 0; dy = 1; len = 1; }
+      dx /= len; dy /= len;
+
+      var baseAngle = Math.atan2(dy, dx);
+      var spread = parsed.isNote ? 0 : Math.min(2.4, 0.6 + n * 0.3);
+      var pillColor = getComputedStyle(pill).backgroundColor;
+
+      var svgNS = 'http://www.w3.org/2000/svg';
+      var svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('class', 'cap-chip-line');
+      svg.setAttribute('width', visualRect.width);
+      svg.setAttribute('height', visualRect.height);
+      visual.appendChild(svg);
+
+      parsed.items.forEach(function (text, i) {
+        var t = n === 1 ? 0.5 : i / (n - 1);
+        var angle = n === 1 ? baseAngle : baseAngle - spread / 2 + spread * t;
+        var ring = (n > 5 && i % 2 === 1) ? 1 : 0;
+        var radius = (parsed.isNote ? 112 : 82) + ring * 56;
+        var bx = px + Math.cos(angle) * radius;
+        var by = py + Math.sin(angle) * radius;
+        var edgePad = 55;
+        bx = Math.min(visualRect.width - edgePad, Math.max(edgePad, bx));
+        by = Math.min(visualRect.height - edgePad, Math.max(edgePad, by));
+
+        var line = document.createElementNS(svgNS, 'line');
+        line.setAttribute('x1', px);
+        line.setAttribute('y1', py);
+        line.setAttribute('x2', bx);
+        line.setAttribute('y2', by);
+        line.setAttribute('stroke', pillColor);
+        line.setAttribute('stroke-width', '1.5');
+        svg.appendChild(line);
+
+        var chip = makeChip(text, parsed.isNote);
+        chip.style.left = bx + 'px';
+        chip.style.top = by + 'px';
+        chip.style.borderColor = pillColor;
+        visual.appendChild(chip);
+
+        (function (el, delay) {
+          setTimeout(function () { el.classList.add('is-visible'); }, delay);
+        })(chip, 30 + i * 40);
+      });
+    }
+
     pills.forEach(function (pill) {
-      pill.addEventListener('click', function () {
+      pill.addEventListener('click', function (e) {
+        e.stopPropagation();
         var data = CAPABILITIES[pill.getAttribute('data-cap')];
         if (!data) return;
-        if (activePill === pill) {
-          closePanel();
-          return;
-        }
-        if (activePill) activePill.classList.remove('is-active');
+        var wasActive = activePill === pill;
+        clearCluster();
+        if (wasActive) return;
+
         pill.classList.add('is-active');
         activePill = pill;
 
-        titleEl.textContent = data.title;
-        tagsEl.innerHTML = '';
-        (data.tools || []).forEach(function (tool) {
-          var span = document.createElement('span');
-          span.className = 'tag';
-          span.textContent = tool;
-          tagsEl.appendChild(span);
-        });
-        noteEl.textContent = data.note || '';
-        panel.hidden = false;
-        panel.scrollIntoView({ block: 'nearest' });
+        if (isMobile()) {
+          renderMobile(pill, data);
+        } else {
+          renderDesktop(pill, data);
+        }
       });
     });
 
-    if (closeBtn) closeBtn.addEventListener('click', closePanel);
+    document.addEventListener('click', function (e) {
+      if (!activePill) return;
+      if (e.target.closest('.cap-pill') || e.target.closest('.cap-chip')) return;
+      clearCluster();
+    });
+
+    window.addEventListener('resize', clearCluster);
   }
 
   // Builds the mailto link client-side to keep the address off
