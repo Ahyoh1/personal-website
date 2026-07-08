@@ -39,11 +39,11 @@
     'orchestration': { title: 'Orchestration & Automation', tools: ['Apache Airflow', 'Terraform', 'Circle CI', 'Cloud Functions', 'Git', 'Zapier', 'n8n', 'Posthog'] },
     'ai-engineering': { title: 'AI Engineering', tools: ['MCP', 'Claude Code', 'Vertex AI (Gemini)', 'Amazon Bedrock'] },
     'languages': { title: 'Languages', tools: ['SQL', 'Python', 'JavaScript', 'Ruby on Rails'] },
-    'leadership': { title: 'Team Leadership', tools: [], note: 'Grew and managed the analytics team at Pinpoint, and led a team of three analysts through Chelsea FC’s data platform migration.' },
-    'stakeholder': { title: 'Stakeholder Management', tools: [], note: 'Reported into C-suite and board reviews at Commercetools, and partnered across engineering, design, CRM and analytics at Pinpoint.' },
-    'cost': { title: 'Cost Optimisation', tools: [], note: 'Cut BigQuery costs at Pinpoint, reduced Redshift warehouse costs at Zoopla, and migrated ingestion tooling off third-party platforms to cut spend.' },
-    'ai-product': { title: 'AI Product Development', tools: [], note: 'Shipped AI-powered products used company-wide: a customer-intelligence platform at Pinpoint and a pricing-intelligence tool at Zoopla.' },
-    'culture': { title: 'Data Culture', tools: [], note: 'Led company-wide data-literacy initiatives at Pinpoint and drove data-driven decision-making at Commercetools.' },
+    'leadership': { title: 'Team Leadership', tools: [] },
+    'stakeholder': { title: 'Stakeholder Management', tools: [] },
+    'cost': { title: 'Cost Optimisation', tools: [] },
+    'ai-product': { title: 'AI Product Development', tools: [] },
+    'culture': { title: 'Data Culture', tools: [] },
     'mentorship': { title: 'Mentorship', tools: ['Utiva', 'DigiGirls', 'The Knowledge Academy'] }
   };
 
@@ -153,7 +153,7 @@
       pill.addEventListener('click', function (e) {
         e.stopPropagation();
         var data = CAPABILITIES[pill.getAttribute('data-cap')];
-        if (!data) return;
+        if (!data || !itemsFor(data).items.length) return;
         var wasActive = activePill === pill;
         clearCluster();
         if (wasActive) return;
