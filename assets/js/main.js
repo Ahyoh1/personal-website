@@ -30,6 +30,68 @@
     });
   }
 
+  // Tool/context data behind each capability pill on the Home page,
+  // sourced from the same stack tags shown per role on the Experience page.
+  var CAPABILITIES = {
+    'warehousing': { title: 'Data Warehousing', tools: ['Google BigQuery', 'Amazon Redshift', 'Snowflake'] },
+    'transformation': { title: 'Data Transformation', tools: ['dbt', 'Dataform'] },
+    'visualisation': { title: 'Data Visualisation', tools: ['Tableau', 'Looker'] },
+    'orchestration': { title: 'Orchestration & Automation', tools: ['Apache Airflow', 'Terraform', 'Circle CI', 'Cloud Functions', 'Git', 'Zapier', 'n8n', 'Posthog'] },
+    'ai-engineering': { title: 'AI Engineering', tools: ['MCP', 'Claude Code', 'Vertex AI (Gemini)', 'Amazon Bedrock'] },
+    'languages': { title: 'Languages', tools: ['SQL', 'Python', 'JavaScript', 'Ruby on Rails'] },
+    'leadership': { title: 'Team Leadership', tools: [], note: 'Grew and managed the analytics team at Pinpoint, and led a team of three analysts through Chelsea FC’s data platform migration.' },
+    'stakeholder': { title: 'Stakeholder Management', tools: [], note: 'Reported into C-suite and board reviews at Commercetools, and partnered across engineering, design, CRM and analytics at Pinpoint.' },
+    'cost': { title: 'Cost Optimisation', tools: [], note: 'Cut BigQuery costs at Pinpoint, reduced Redshift warehouse costs at Zoopla, and migrated ingestion tooling off third-party platforms to cut spend.' },
+    'ai-product': { title: 'AI Product Development', tools: [], note: 'Shipped AI-powered products used company-wide: a customer-intelligence platform at Pinpoint and a pricing-intelligence tool at Zoopla.' },
+    'culture': { title: 'Data Culture', tools: [], note: 'Led company-wide data-literacy initiatives at Pinpoint and drove data-driven decision-making at Commercetools.' },
+    'mentorship': { title: 'Mentorship', tools: ['Utiva', 'DigiGirls', 'The Knowledge Academy'] }
+  };
+
+  function initCapabilities() {
+    var pills = document.querySelectorAll('.cap-pill');
+    var panel = document.getElementById('capDetail');
+    if (!pills.length || !panel) return;
+    var titleEl = document.getElementById('capDetailTitle');
+    var tagsEl = document.getElementById('capDetailTags');
+    var noteEl = document.getElementById('capDetailNote');
+    var closeBtn = document.getElementById('capDetailClose');
+    var activePill = null;
+
+    function closePanel() {
+      panel.hidden = true;
+      if (activePill) activePill.classList.remove('is-active');
+      activePill = null;
+    }
+
+    pills.forEach(function (pill) {
+      pill.addEventListener('click', function () {
+        var data = CAPABILITIES[pill.getAttribute('data-cap')];
+        if (!data) return;
+        if (activePill === pill) {
+          closePanel();
+          return;
+        }
+        if (activePill) activePill.classList.remove('is-active');
+        pill.classList.add('is-active');
+        activePill = pill;
+
+        titleEl.textContent = data.title;
+        tagsEl.innerHTML = '';
+        (data.tools || []).forEach(function (tool) {
+          var span = document.createElement('span');
+          span.className = 'tag';
+          span.textContent = tool;
+          tagsEl.appendChild(span);
+        });
+        noteEl.textContent = data.note || '';
+        panel.hidden = false;
+        panel.scrollIntoView({ block: 'nearest' });
+      });
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', closePanel);
+  }
+
   // Builds the mailto link client-side to keep the address off
   // plain-text scrapers of the static HTML.
   function initEmailReveal() {
@@ -46,6 +108,7 @@
     initNav();
     initReadMore();
     initEmailReveal();
+    initCapabilities();
 
     var current = document.body.getAttribute('data-page');
     if (current) {
