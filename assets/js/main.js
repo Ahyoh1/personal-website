@@ -106,8 +106,20 @@
       if (len < 30) { dx = 0; dy = 1; len = 1; }
       dx /= len; dy /= len;
 
+      // Keep the fan pointing into open space: if "away from center" would
+      // send it off the edge the pill is already hugging, flip that axis
+      // inward instead of letting the later bounds-clamp collapse chips
+      // on top of each other.
+      var edgeMargin = 130;
+      if (px < edgeMargin && dx < 0) dx = Math.abs(dx) || 0.6;
+      if (px > visualRect.width - edgeMargin && dx > 0) dx = -Math.abs(dx) || -0.6;
+      if (py < edgeMargin && dy < 0) dy = Math.abs(dy) || 0.6;
+      if (py > visualRect.height - edgeMargin && dy > 0) dy = -Math.abs(dy) || -0.6;
+      var newLen = Math.sqrt(dx * dx + dy * dy) || 1;
+      dx /= newLen; dy /= newLen;
+
       var baseAngle = Math.atan2(dy, dx);
-      var spread = parsed.isNote ? 0 : Math.min(2.4, 0.6 + n * 0.3);
+      var spread = parsed.isNote ? 0 : Math.min(3.2, 0.8 + n * 0.34);
       var pillColor = getComputedStyle(pill).backgroundColor;
 
       var svgNS = 'http://www.w3.org/2000/svg';
@@ -117,14 +129,28 @@
       svg.setAttribute('height', visualRect.height);
       visual.appendChild(svg);
 
+      // Split into two interleaved rings (near/far) rather than one arc -
+      // each ring spreads its own items across the full angle, and ring 1
+      // is phase-shifted by half a slot so it falls in ring 0's gaps
+      // instead of stacking radially outward from it.
+      var useTwoRings = n >= 4;
+      var ring0Count = useTwoRings ? Math.ceil(n / 2) : n;
+      var ring1Count = useTwoRings ? Math.floor(n / 2) : 0;
+      var baseRadius = (parsed.isNote ? 130 : 100) + n * 7;
+      var ringGap = 95;
+      var phaseShift = ring1Count ? (spread / ring1Count) / 2 : 0;
+
       parsed.items.forEach(function (text, i) {
-        var t = n === 1 ? 0.5 : i / (n - 1);
-        var angle = n === 1 ? baseAngle : baseAngle - spread / 2 + spread * t;
-        var ring = (n > 5 && i % 2 === 1) ? 1 : 0;
-        var radius = (parsed.isNote ? 112 : 82) + ring * 56;
+        var inRing1 = useTwoRings && i % 2 === 1;
+        var ringIndex = inRing1 ? (i - 1) / 2 : Math.ceil(i / 2);
+        var ringCount = inRing1 ? ring1Count : ring0Count;
+        var t = ringCount <= 1 ? 0.5 : ringIndex / (ringCount - 1);
+        var angle = ringCount === 1 ? baseAngle : baseAngle - spread / 2 + spread * t;
+        if (inRing1) angle += phaseShift;
+        var radius = baseRadius + (inRing1 ? ringGap : 0);
         var bx = px + Math.cos(angle) * radius;
         var by = py + Math.sin(angle) * radius;
-        var edgePad = 55;
+        var edgePad = 20;
         bx = Math.min(visualRect.width - edgePad, Math.max(edgePad, bx));
         by = Math.min(visualRect.height - edgePad, Math.max(edgePad, by));
 
