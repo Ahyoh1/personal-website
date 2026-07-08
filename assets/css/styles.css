@@ -97,6 +97,18 @@ img, svg { max-width: 100%; display: block; }
   padding: 0 var(--space-3);
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 a:focus-visible,
 button:focus-visible,
 [tabindex]:focus-visible {
@@ -474,99 +486,136 @@ section.tight { padding: var(--space-5) 0; }
 }
 
 /* ---------------------------------------------------------
-   Experience — drill-down accordion
+   Experience — alternating timeline
 --------------------------------------------------------- */
-.timeline {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+.exp-timeline {
+  position: relative;
+  padding: var(--space-2) 0;
 }
 
-.role-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-card);
-  transition: box-shadow var(--transition);
+.exp-timeline::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-border);
+  transform: translateX(-50%);
 }
 
-.role-card:hover { box-shadow: var(--shadow-card-hover); }
+.exp-item {
+  position: relative;
+  width: 50%;
+  padding: 0 var(--space-4) var(--space-6) 0;
+}
 
-.role-summary {
-  width: 100%;
+.exp-item.exp-right {
+  margin-left: 50%;
+  padding: 0 0 var(--space-6) var(--space-4);
+}
+
+.exp-item.exp-left { text-align: right; }
+.exp-item.exp-right { text-align: left; }
+
+.exp-dot {
+  position: absolute;
+  top: 0.35rem;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 4px var(--color-bg);
+}
+.exp-item.exp-left .exp-dot { right: -7px; }
+.exp-item.exp-right .exp-dot { left: -7px; }
+
+.exp-meta {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-muted-fg);
+  margin-bottom: 0.6rem;
+}
+
+.exp-company-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3);
-  background: transparent;
-  border: none;
-  color: var(--color-fg);
-  text-align: left;
+  gap: 0.6rem;
+  margin-bottom: 0.1rem;
 }
+.exp-item.exp-left .exp-company-row { justify-content: flex-end; }
+.exp-item.exp-right .exp-company-row { justify-content: flex-start; }
 
-.role-summary:hover { background: var(--color-muted); }
-
-.role-heading-group {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.role-logo {
-  width: 3rem;
-  height: 3rem;
-  border-radius: var(--radius-md);
-  background: var(--color-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.role-logo img {
-  max-width: 65%;
-  max-height: 65%;
+.exp-logo {
+  height: 26px;
+  width: auto;
+  max-width: 90px;
   object-fit: contain;
 }
 
-.role-heading h3 { margin-bottom: 0.2rem; }
-.role-meta {
-  font-family: var(--font-heading);
-  font-size: 0.8rem;
-  color: var(--color-muted-fg);
-}
-.role-summary-text {
-  margin-top: 0.4rem;
-  font-size: 0.9rem;
+.exp-logo-wordmark {
+  height: 34px;
+  max-width: 160px;
 }
 
-.chevron {
-  flex-shrink: 0;
-  transition: transform var(--transition);
+.exp-company { margin: 0; }
+
+.exp-role {
   color: var(--color-accent);
+  font-weight: 600;
+  margin-bottom: 0.7rem;
 }
 
-.role-card[data-open="true"] .chevron { transform: rotate(180deg); }
+.exp-summary { margin-bottom: 0.7rem; }
 
-.role-detail {
+.exp-readmore {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-fg);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.exp-readmore:hover { color: var(--color-accent); }
+
+.exp-detail {
   max-height: 0;
   overflow: hidden;
   transition: max-height 300ms ease;
-  border-top: 1px solid transparent;
+  text-align: left;
 }
 
-.role-card[data-open="true"] .role-detail {
-  border-top-color: var(--color-border);
-}
-
-.role-detail-inner {
-  padding: 0 var(--space-3) var(--space-3);
-}
+.exp-detail .role-detail-inner { padding: var(--space-2) 0 0; }
 
 .role-detail-inner ul { margin: 0 0 var(--space-2); padding-left: 1.1em; }
 .role-detail-inner li { margin-bottom: 0.4rem; color: var(--color-secondary); }
+
+@media (max-width: 768px) {
+  .exp-timeline::before { left: 20px; transform: none; }
+
+  .exp-item.exp-left,
+  .exp-item.exp-right {
+    width: auto;
+    margin-left: 0;
+    padding: 0 0 var(--space-5) 2.75rem;
+    text-align: left;
+  }
+
+  .exp-item.exp-left .exp-dot,
+  .exp-item.exp-right .exp-dot {
+    left: 14px;
+    right: auto;
+  }
+
+  .exp-item.exp-left .exp-company-row,
+  .exp-item.exp-right .exp-company-row {
+    justify-content: flex-start;
+  }
+}
 
 /* ---------------------------------------------------------
    Footer

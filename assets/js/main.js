@@ -17,15 +17,14 @@
     });
   }
 
-  function initAccordion() {
-    document.querySelectorAll('.role-card').forEach(function (card) {
-      var trigger = card.querySelector('.role-summary');
-      var detail = card.querySelector('.role-detail');
-      if (!trigger || !detail) return;
+  function initReadMore() {
+    document.querySelectorAll('[data-readmore]').forEach(function (trigger) {
+      var detail = trigger.nextElementSibling;
+      if (!detail || !detail.classList.contains('exp-detail')) return;
       trigger.addEventListener('click', function () {
-        var isOpen = card.getAttribute('data-open') === 'true';
-        card.setAttribute('data-open', String(!isOpen));
+        var isOpen = trigger.getAttribute('aria-expanded') === 'true';
         trigger.setAttribute('aria-expanded', String(!isOpen));
+        trigger.textContent = !isOpen ? 'Show less' : 'Read more →';
         detail.style.maxHeight = !isOpen ? detail.scrollHeight + 'px' : '0px';
       });
     });
@@ -45,7 +44,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     initNav();
-    initAccordion();
+    initReadMore();
     initEmailReveal();
 
     var current = document.body.getAttribute('data-page');
