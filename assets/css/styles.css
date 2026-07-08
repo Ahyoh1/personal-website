@@ -75,6 +75,13 @@ h3 { font-size: 1.25rem; }
 
 p { margin: 0 0 var(--space-2); color: var(--color-secondary); }
 
+.accent-serif {
+  font-family: 'Instrument Serif', 'Cormorant Garamond', ui-serif, Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--color-accent);
+}
+
 a {
   color: inherit;
   text-decoration: none;
