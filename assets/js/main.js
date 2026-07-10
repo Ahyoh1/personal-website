@@ -17,19 +17,6 @@
     });
   }
 
-  function initReadMore() {
-    document.querySelectorAll('[data-readmore]').forEach(function (trigger) {
-      var detail = trigger.nextElementSibling;
-      if (!detail || !detail.classList.contains('exp-detail')) return;
-      trigger.addEventListener('click', function () {
-        var isOpen = trigger.getAttribute('aria-expanded') === 'true';
-        trigger.setAttribute('aria-expanded', String(!isOpen));
-        trigger.textContent = !isOpen ? 'Show less' : 'Read more →';
-        detail.style.maxHeight = !isOpen ? detail.scrollHeight + 'px' : '0px';
-      });
-    });
-  }
-
   // Tool/context data behind each capability pill on the Home page,
   // sourced from the same stack tags shown per role on the Experience page.
   var CAPABILITIES = {
@@ -218,7 +205,6 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     initNav();
-    initReadMore();
     initEmailReveal();
     initCapabilities();
 

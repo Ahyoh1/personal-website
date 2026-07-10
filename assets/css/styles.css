@@ -779,30 +779,6 @@ section.tight { padding: var(--space-5) 0; }
 
 .exp-summary { margin-bottom: 0.7rem; }
 
-.exp-readmore {
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--color-fg);
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-}
-.exp-readmore:hover { color: var(--color-accent); }
-
-.exp-detail {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 300ms ease;
-  text-align: left;
-}
-
-.exp-detail .role-detail-inner { padding: var(--space-2) 0 0; }
-
-.role-detail-inner ul { margin: 0 0 var(--space-2); padding-left: 1.1em; }
-.role-detail-inner li { margin-bottom: 0.4rem; color: var(--color-secondary); }
-
 @media (max-width: 768px) {
   .exp-timeline::before { left: 20px; transform: none; }
 
