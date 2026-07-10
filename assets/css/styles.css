@@ -87,6 +87,18 @@ a {
   text-decoration: none;
 }
 
+p a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color var(--transition);
+}
+
+p a:hover {
+  text-decoration-color: currentColor;
+}
+
 ul { padding-left: 1.2em; }
 
 img, svg { max-width: 100%; display: block; }
